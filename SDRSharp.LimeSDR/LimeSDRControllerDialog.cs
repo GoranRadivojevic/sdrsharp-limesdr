@@ -28,34 +28,41 @@ namespace SDRSharp.LimeSDR
 
         public LimeSDRControllerDialog(LimeSDRIO owner)
         {
-            InitializeComponent();
-            float dpi = this.CreateGraphics().DpiX;
-            float ratio = dpi / 96.0f;
-            string font_name = this.Font.Name;
-            float size = (float)(8.25 / ratio);
-            System.Drawing.Font new_font = new System.Drawing.Font(font_name, size);
-            this.Font = new_font;
-            this.PerformAutoScale();
-            this.PerformLayout();
-            _owner = owner;
-            InitSampleRates();
-            GetDeviceList();
+            try
+            {
+                InitializeComponent();
+                float dpi = this.CreateGraphics().DpiX;
+                float ratio = dpi / 96.0f;
+                string font_name = this.Font.Name;
+                float size = (float)(8.25 / ratio);
+                System.Drawing.Font new_font = new System.Drawing.Font(font_name, size);
+                this.Font = new_font;
+                this.PerformAutoScale();
+                this.PerformLayout();
+                _owner = owner;
+                InitSampleRates();
+                GetDeviceList();
 
-            _initialized = true;
+                _initialized = true;
 
-            comboRadioModel.Text = Utils.GetStringSetting("LimeSDR model", "");
-            gainBar.Value = Utils.GetIntSetting("LimeSDR Gain", 40);
-            gainBar_Scroll(this, EventArgs.Empty);
-            gainDB.Text = gainBar.Value.ToString();
-            samplerateComboBox.Text = Utils.GetStringSetting("LimeSDR SampleRate", "768000");
-            LPBWcomboBox.Text = Utils.GetStringSetting("LimeSDR LPBW", "1.5MHz");
-            rx0.Checked = Utils.GetBooleanSetting("LimeSDR RX0");
-            rx1.Checked = Utils.GetBooleanSetting("LimeSDR RX1");
-            ant_l.Checked = Utils.GetBooleanSetting("LimeSDR ANT_L");
-            ant_h.Checked = Utils.GetBooleanSetting("LimeSDR ANT_H");
-            ant_w.Checked = Utils.GetBooleanSetting("LimeSDR ANT_W");
-            udSpecOffset.Value = (decimal)Utils.GetDoubleSetting("LimeSDR SpecOffset", 50);
-            udFrequencyDiff.Value = (decimal)Utils.GetDoubleSetting("LimeSDR Frequency diff.", 0.0);
+                comboRadioModel.Text = Utils.GetStringSetting("LimeSDR model", "");
+                gainBar.Value = Utils.GetIntSetting("LimeSDR Gain", 40);
+                gainBar_Scroll(this, EventArgs.Empty);
+                gainDB.Text = gainBar.Value.ToString();
+                samplerateComboBox.Text = Utils.GetStringSetting("LimeSDR SampleRate", "768000");
+                LPBWcomboBox.Text = Utils.GetStringSetting("LimeSDR LPBW", "1.5MHz");
+                rx0.Checked = Utils.GetBooleanSetting("LimeSDR RX0");
+                rx1.Checked = Utils.GetBooleanSetting("LimeSDR RX1");
+                ant_l.Checked = Utils.GetBooleanSetting("LimeSDR ANT_L");
+                ant_h.Checked = Utils.GetBooleanSetting("LimeSDR ANT_H");
+                ant_w.Checked = Utils.GetBooleanSetting("LimeSDR ANT_W");
+                udSpecOffset.Value = (decimal)Utils.GetDoubleSetting("LimeSDR SpecOffset", 50);
+                udFrequencyDiff.Value = (decimal)Utils.GetDoubleSetting("LimeSDR Frequency diff.", 0.0);
+            }
+            catch(Exception ex)
+            {
+                Debug.Write(ex.ToString());
+            }
         }
 
         private bool Initialized
@@ -75,9 +82,15 @@ namespace SDRSharp.LimeSDR
             samplerateComboBox.Items.Add("2304000");
             samplerateComboBox.Items.Add("3072000");
             samplerateComboBox.Items.Add("6144000");
+            samplerateComboBox.Items.Add("8192000");
             samplerateComboBox.Items.Add("12288000");
+            samplerateComboBox.Items.Add("19200000");
             samplerateComboBox.Items.Add("24576000");
+            samplerateComboBox.Items.Add("30000000");
+            samplerateComboBox.Items.Add("35000000");
+            samplerateComboBox.Items.Add("40000000");
             samplerateComboBox.Items.Add("49152000");
+            samplerateComboBox.Items.Add("55296000");
             samplerateComboBox.Text = "768000";
         }
 
@@ -430,11 +443,6 @@ namespace SDRSharp.LimeSDR
                 txtGatewareVersion.Text = "";
                 txtLimeSuiteVersion.Text = "";
             }
-        }
-
-        private void groupBox4_Enter(object sender, EventArgs e)
-        {
-
         }
     }
 }

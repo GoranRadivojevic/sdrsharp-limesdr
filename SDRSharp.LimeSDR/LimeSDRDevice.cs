@@ -20,13 +20,13 @@ namespace SDRSharp.LimeSDR
     {
         #region variable 
 
+        LimeSDRIO _parrent;
         private const double DefaultSamplerate = 768000;
         private const long DefaultFrequency = 101700000;
         private const uint SampleTimeoutMs = 1000;
 
         public IntPtr _device = IntPtr.Zero;
         IntPtr _stream = IntPtr.Zero;
-        private GCHandle _gcHandle;
         private bool _isStreaming;
         private Thread _sampleThread = null;
         private uint _channel = 0;  // rx0
@@ -60,8 +60,6 @@ namespace SDRSharp.LimeSDR
         LMS7Parameter PGA_gain = new LMS7Parameter();
         LMS7Parameter TIA_gain = new LMS7Parameter();
         LMS7Parameter LNA_gain = new LMS7Parameter();
-        LMS7Parameter CMIX_BYP_RXTSP = new LMS7Parameter();
-        Mutex dataMutex;
 
         #endregion
 
@@ -162,9 +160,7 @@ namespace SDRSharp.LimeSDR
                     Thread.Sleep(100);
                 }
 
-                dataMutex.WaitOne();
                 NativeMethods.LMS_RecvStream(_stream, _samplesPtr, _readLength, ref meta, SampleTimeoutMs);
-                dataMutex.ReleaseMutex();
 
                 var ptrIq = _iqPtr;
 
@@ -184,10 +180,9 @@ namespace SDRSharp.LimeSDR
 
         #endregion
 
-        public LimeSDRDevice()
+        public LimeSDRDevice(LimeSDRIO parrent)
         {
-            _gcHandle = GCHandle.Alloc(this);
-            dataMutex = new Mutex();
+            _parrent = parrent;
 
             PGA_gain.address = 0x0119;
             PGA_gain.msb = 4;
@@ -209,13 +204,6 @@ namespace SDRSharp.LimeSDR
             LNA_gain.defaultValue = 15;
             LNA_gain.name = "G_LNA_RFE";
             LNA_gain.tooltip = "Controls the gain of the LNA";
-
-            CMIX_BYP_RXTSP.address = 0x040C;
-            CMIX_BYP_RXTSP.msb = 7;
-            CMIX_BYP_RXTSP.lsb = 7;
-            CMIX_BYP_RXTSP.defaultValue = 0;
-            CMIX_BYP_RXTSP.name = "CMIX_BYP_RXTSP";
-            CMIX_BYP_RXTSP.tooltip = "CMIX bypass";
         }
 
         ~LimeSDRDevice()
@@ -244,11 +232,6 @@ namespace SDRSharp.LimeSDR
         public void Dispose()
         {
             this.Stop();
-            if (_gcHandle.IsAllocated)
-            {
-                _gcHandle.Free();
-            }
-
             GC.SuppressFinalize(this);
             _device = IntPtr.Zero;
         }
@@ -371,6 +354,7 @@ namespace SDRSharp.LimeSDR
             _stream = Marshal.AllocHGlobal(Marshal.SizeOf(streamId));
 
             Marshal.StructureToPtr(streamId, _stream, false);
+
             if (NativeMethods.LMS_SetupStream(_device, _stream) != 0)
             {
                 throw new ApplicationException(NativeMethods.limesdr_strerror());
@@ -416,11 +400,15 @@ namespace SDRSharp.LimeSDR
                         {
                             _old_centerFrequency = _centerFrequency;
                             _isStreaming = false;
+                            Thread.Sleep(1000);
+                            _parrent.ReStart();
                         }
                         else if (_centerFrequency > 30 * 1e6 && _old_centerFrequency <= 30 * 1e6)
                         {
                             _old_centerFrequency = _centerFrequency;
                             _isStreaming = false;
+                            Thread.Sleep(1000);
+                            _parrent.ReStart();
                         }
                         else
                         {
@@ -438,12 +426,6 @@ namespace SDRSharp.LimeSDR
 
                                     if (NativeMethods.LMS_SetLOFrequency(_device, LMS_CH_RX, _channel, _centerFrequency + _freqDiff) != 0)
                                     {
-                                        throw new ApplicationException(NativeMethods.limesdr_strerror());
-                                    }
-
-                                    if (NativeMethods.LMS_WriteParam(_device, CMIX_BYP_RXTSP, 1) < 0)
-                                    {
-                                        _isStreaming = false;
                                         throw new ApplicationException(NativeMethods.limesdr_strerror());
                                     }
                                 }
@@ -471,12 +453,6 @@ namespace SDRSharp.LimeSDR
                                         }
 
                                         if (NativeMethods.LMS_SetNCOIndex(_device, LMS_CH_RX, _channel, 0, false) != 0)
-                                        {
-                                            _isStreaming = false;
-                                            throw new ApplicationException(NativeMethods.limesdr_strerror());
-                                        }
-
-                                        if (NativeMethods.LMS_WriteParam(_device, CMIX_BYP_RXTSP, 0) < 0)
                                         {
                                             _isStreaming = false;
                                             throw new ApplicationException(NativeMethods.limesdr_strerror());
@@ -595,14 +571,10 @@ namespace SDRSharp.LimeSDR
 
                 if (_isStreaming)
                 {
-                    dataMutex.WaitOne();
-
                     if (NativeMethods.LMS_SetLPFBW(_device, LMS_CH_RX, _channel, _lpbw) != 0)
                     {
                         throw new ApplicationException(NativeMethods.limesdr_strerror());
                     }
-
-                    dataMutex.ReleaseMutex();
                 }
             }
         }

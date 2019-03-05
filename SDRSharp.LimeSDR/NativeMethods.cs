@@ -116,6 +116,30 @@ namespace SDRSharp.LimeSDR
         }*/
     }
 
+    /**Streaming status structure*/
+    [StructLayout(LayoutKind.Sequential)]
+    public unsafe struct lms_stream_status_t
+    {
+        ///Indicates whether the stream is currently active
+        bool active;
+        ///Number of samples in FIFO buffer
+        public uint fifoFilledCount;
+        ///Size of FIFO buffer
+        public uint fifoSize;
+        ///FIFO underrun count
+        public uint underrun;
+        ///FIFO overrun count
+        public uint overrun;
+        ///Number of dropped packets by HW
+        public uint droppedPackets;
+        ///Sampling rate of the stream
+        public double sampleRate;
+        ///Combined data rate of all stream of the same direction (TX or RX)
+        public double linkRate;
+        ///Current HW timestamp
+        public UInt64 timestamp;
+    }
+
     class NativeMethods
     {
         const string APIDLL = "LimeSuite";
@@ -209,5 +233,8 @@ namespace SDRSharp.LimeSDR
 
         [DllImport(APIDLL, EntryPoint = "LMS_GetLibraryVersion", CallingConvention = CallingConvention.Cdecl)]
         public unsafe static extern char* LMS_GetLibraryVersion();
+
+        [DllImport(APIDLL, EntryPoint = "LMS_GetStreamStatus", CallingConvention = CallingConvention.Cdecl)]
+        public unsafe static extern int LMS_GetStreamStatus(IntPtr stream, ref lms_stream_status_t status);
     }
 }

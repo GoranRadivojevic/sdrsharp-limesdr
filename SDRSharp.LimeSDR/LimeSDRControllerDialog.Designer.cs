@@ -476,7 +476,6 @@
             this.groupBox4.TabIndex = 20;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Device Info";
-            this.groupBox4.Enter += new System.EventHandler(this.groupBox4_Enter);
             // 
             // txtSerialNumber
             // 
@@ -675,7 +674,7 @@
             this.Name = "LimeSDRControllerDialog";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "LimeSDR Controller YT7PWR   v0.1";
+            this.Text = "LimeSDR Controller YT7PWR   v0.2";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LimeSDRControllerDialog_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.gainBar)).EndInit();

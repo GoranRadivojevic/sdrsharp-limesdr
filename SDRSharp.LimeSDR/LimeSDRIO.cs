@@ -221,6 +221,7 @@ namespace SDRSharp.LimeSDR
                 _gui.Close();
                 _gui.Dispose();
             }
+
             GC.SuppressFinalize(this);
         }
 
@@ -250,6 +251,7 @@ namespace SDRSharp.LimeSDR
 
             if (eventHandler == null)
                 return;
+
             eventHandler((object)this, e);
         }
 
@@ -257,7 +259,7 @@ namespace SDRSharp.LimeSDR
         {
             try
             {
-                _LimeDev = new LimeSDRDevice();
+                _LimeDev = new LimeSDRDevice(this);
                 _LimeDev.SamplesAvailable += LimeDevice_SamplesAvailable;
                 _LimeDev.SampleRateChanged += new EventHandler(this.LimeSDRDevice_SampleRateChanged);
                 _LimeDev.SampleRate = _sampleRate;
@@ -277,7 +279,7 @@ namespace SDRSharp.LimeSDR
 
                 if (this._LimeDev == null)
                 {
-                    _LimeDev = new LimeSDRDevice();
+                    _LimeDev = new LimeSDRDevice(this);
                     _LimeDev.SamplesAvailable += LimeDevice_SamplesAvailable;
                     _LimeDev.SampleRateChanged += LimeSDRDevice_SampleRateChanged;
                     _LimeDev.SampleRate = _sampleRate;
@@ -299,6 +301,42 @@ namespace SDRSharp.LimeSDR
                 _isStreaming = true;
             }
             catch(Exception ex)
+            {
+                _gui.grpChannel.Enabled = true;
+                _gui.samplerateComboBox.Enabled = true;
+                Debug.Write(ex.ToString());
+            }
+        }
+
+        public void ReStart()
+        {
+            try
+            {
+                _gui.grpChannel.Enabled = false;
+                _gui.samplerateComboBox.Enabled = false;
+
+                if (this._LimeDev == null)
+                {
+                    _LimeDev = new LimeSDRDevice(this);
+                    _LimeDev.SamplesAvailable += LimeDevice_SamplesAvailable;
+                    _LimeDev.SampleRateChanged += LimeSDRDevice_SampleRateChanged;
+                    _LimeDev.SampleRate = _sampleRate;
+                }
+
+                if (!_LimeDev.Open(RadioName))
+                {
+                    _LimeDev.Close();
+                    _LimeDev.Open(RadioName);
+                }
+
+                _LimeDev.LPBW = _gui.LPBW;
+                _LimeDev.SampleRate = _sampleRate;
+                _LimeDev.Start(_channel, _lpbw, _gain, _ant, _sampleRate, _specOffset);
+                _LimeDev.LPBW = _gui.LPBW;
+
+                _isStreaming = true;
+            }
+            catch (Exception ex)
             {
                 _gui.grpChannel.Enabled = true;
                 _gui.samplerateComboBox.Enabled = true;
@@ -408,12 +446,12 @@ namespace SDRSharp.LimeSDR
         public long MaximumTunableFrequency
         {
 
-            get { return 3800000000L; }
+            get { return 3800000000; }
         }
 
         public long MinimumTunableFrequency
         {
-            get { return 1000; }
+            get { return 0; }
         }
     }
 }
