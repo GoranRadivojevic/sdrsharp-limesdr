@@ -163,7 +163,7 @@ namespace SDRSharp.CAT
             set
             {
                 long newFrequency = (long)(value * 1e6);
-                long newCenterFrequency = newFrequency + (_sdr.RFBandwidth / 4);
+                long newCenterFrequency = newFrequency + (_sdr.RFBandwidth / 8);
                 _sdr.Frequency = newFrequency;
                 _sdr.ResetFrequency(newFrequency, newCenterFrequency);
                 _sdr.Perform();

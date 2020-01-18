@@ -96,7 +96,10 @@ namespace SDRSharp.LimeSDR
         {
             get
             {
-                return _gain;
+                if (_LimeDev != null)
+                    return _LimeDev.Gain;
+                else
+                    return _gain;
             }
 
             set
@@ -104,9 +107,7 @@ namespace SDRSharp.LimeSDR
                 _gain = (uint)value;
 
                 if (_LimeDev != null)
-                {
                     _LimeDev.Gain = _gain;
-                }
             }
         }
 
@@ -160,6 +161,16 @@ namespace SDRSharp.LimeSDR
 
         public ushort LNAgain
         {
+            get
+            {
+                if (_LimeDev != null)
+                {
+                    return _LimeDev.LNAgain;
+                }
+                else
+                    return 0;
+            }
+
             set
             {
                 _lnaGain = value;
@@ -173,6 +184,16 @@ namespace SDRSharp.LimeSDR
 
         public ushort TIAgain
         {
+            get
+            {
+                if (_LimeDev != null)
+                {
+                    return _LimeDev.TIAgain;
+                }
+                else
+                    return 0;
+            }
+
             set
             {
                 _tiaGain = value;
@@ -186,6 +207,16 @@ namespace SDRSharp.LimeSDR
 
         public ushort PGAgain
         {
+            get
+            {
+                if (_LimeDev != null)
+                {
+                    return _LimeDev.PGAgain;
+                }
+                else
+                    return 0;
+            }
+
             set
             {
                 _pgaGain = value;
@@ -293,12 +324,15 @@ namespace SDRSharp.LimeSDR
                     _LimeDev.Open(RadioName);
                 }
 
+                _LimeDev.GFIR_BPF_Width = _gui._GFIR_BPF_Width;
                 _LimeDev.LPBW = _gui.LPBW;
                 _LimeDev.SampleRate = _sampleRate;
                 _LimeDev.Start(_channel, _lpbw, _gain, _ant, _sampleRate, _specOffset);
                 _LimeDev.LPBW = _gui.LPBW;
 
                 _isStreaming = true;
+                _gui.btnRadioInfo.Enabled = true;
+                _gui.btnRadioRefresh.Enabled = false;
             }
             catch(Exception ex)
             {
@@ -335,6 +369,8 @@ namespace SDRSharp.LimeSDR
                 _LimeDev.LPBW = _gui.LPBW;
 
                 _isStreaming = true;
+                _gui.btnRadioInfo.Enabled = true;
+                _gui.btnRadioRefresh.Enabled = false;
             }
             catch (Exception ex)
             {
@@ -348,6 +384,8 @@ namespace SDRSharp.LimeSDR
         {
             try
             {
+                _gui.btnRadioInfo.Enabled = false;
+                _gui.btnRadioRefresh.Enabled = true;
                 _isStreaming = false;
                 _gui.grpChannel.Enabled = true;
                 _gui.samplerateComboBox.Enabled = true;
@@ -412,6 +450,7 @@ namespace SDRSharp.LimeSDR
                 {
                     _frequency = this._LimeDev.Frequency;
                 }
+
                 return (long)_frequency;
             }
             set
@@ -439,8 +478,7 @@ namespace SDRSharp.LimeSDR
 
         public bool CanTune
         {
-            get
-            { return true; }
+            get { return true; }
         }
 
         public long MaximumTunableFrequency
