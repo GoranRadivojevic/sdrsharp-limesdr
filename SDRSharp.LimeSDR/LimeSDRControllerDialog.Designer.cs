@@ -46,6 +46,12 @@
             this.udSpecOffset = new System.Windows.Forms.NumericUpDown();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.udTestSignalNoise = new System.Windows.Forms.NumericUpDown();
+            this.label18 = new System.Windows.Forms.Label();
+            this.udTestSignalScale = new System.Windows.Forms.NumericUpDown();
+            this.chkTestSignal = new System.Windows.Forms.CheckBox();
+            this.tbTestFrequency = new System.Windows.Forms.TrackBar();
             this.label14 = new System.Windows.Forms.Label();
             this.udGFIR_BPF_Width = new System.Windows.Forms.NumericUpDown();
             this.lblLimeSDR_LNAGain = new System.Windows.Forms.Label();
@@ -57,8 +63,6 @@
             this.label7 = new System.Windows.Forms.Label();
             this.tbLimeSDR_LNAGain = new System.Windows.Forms.TrackBar();
             this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.udFrequencyDiff = new System.Windows.Forms.NumericUpDown();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.txtTemperature = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
@@ -78,23 +82,28 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnRXcalibration = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.gainBar)).BeginInit();
             this.grpChannel.SuspendLayout();
             this.grpAntenna.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.udSpecOffset)).BeginInit();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udTestSignalNoise)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udTestSignalScale)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbTestFrequency)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.udGFIR_BPF_Width)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbLimeSDR_PGAGain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbLimeSDR_TIAGain)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbLimeSDR_LNAGain)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udFrequencyDiff)).BeginInit();
             this.groupBox4.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // close
             // 
             this.close.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.close.Location = new System.Drawing.Point(221, 493);
+            this.close.Location = new System.Drawing.Point(221, 544);
             this.close.Name = "close";
             this.close.Size = new System.Drawing.Size(75, 25);
             this.close.TabIndex = 0;
@@ -296,6 +305,12 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.label19);
+            this.groupBox3.Controls.Add(this.udTestSignalNoise);
+            this.groupBox3.Controls.Add(this.label18);
+            this.groupBox3.Controls.Add(this.udTestSignalScale);
+            this.groupBox3.Controls.Add(this.chkTestSignal);
+            this.groupBox3.Controls.Add(this.tbTestFrequency);
             this.groupBox3.Controls.Add(this.label14);
             this.groupBox3.Controls.Add(this.udGFIR_BPF_Width);
             this.groupBox3.Controls.Add(this.lblLimeSDR_LNAGain);
@@ -307,8 +322,6 @@
             this.groupBox3.Controls.Add(this.label7);
             this.groupBox3.Controls.Add(this.tbLimeSDR_LNAGain);
             this.groupBox3.Controls.Add(this.label6);
-            this.groupBox3.Controls.Add(this.label5);
-            this.groupBox3.Controls.Add(this.udFrequencyDiff);
             this.groupBox3.Controls.Add(this.samplerateComboBox);
             this.groupBox3.Controls.Add(this.label4);
             this.groupBox3.Controls.Add(this.label1);
@@ -322,15 +335,97 @@
             this.groupBox3.Controls.Add(this.gainDB);
             this.groupBox3.Location = new System.Drawing.Point(257, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(242, 466);
+            this.groupBox3.Size = new System.Drawing.Size(242, 517);
             this.groupBox3.TabIndex = 19;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Settings";
             // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(124, 484);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(34, 13);
+            this.label19.TabIndex = 37;
+            this.label19.Text = "Noise";
+            // 
+            // udTestSignalNoise
+            // 
+            this.udTestSignalNoise.DecimalPlaces = 6;
+            this.udTestSignalNoise.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.udTestSignalNoise.Location = new System.Drawing.Point(163, 480);
+            this.udTestSignalNoise.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.udTestSignalNoise.Name = "udTestSignalNoise";
+            this.udTestSignalNoise.Size = new System.Drawing.Size(59, 20);
+            this.udTestSignalNoise.TabIndex = 36;
+            this.udTestSignalNoise.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.udTestSignalNoise.ValueChanged += new System.EventHandler(this.udTestSignalNoise_ValueChanged);
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(21, 484);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(34, 13);
+            this.label18.TabIndex = 35;
+            this.label18.Text = "Scale";
+            // 
+            // udTestSignalScale
+            // 
+            this.udTestSignalScale.DecimalPlaces = 6;
+            this.udTestSignalScale.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.udTestSignalScale.Location = new System.Drawing.Point(60, 480);
+            this.udTestSignalScale.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.udTestSignalScale.Name = "udTestSignalScale";
+            this.udTestSignalScale.Size = new System.Drawing.Size(59, 20);
+            this.udTestSignalScale.TabIndex = 34;
+            this.udTestSignalScale.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.udTestSignalScale.ValueChanged += new System.EventHandler(this.udTestSignalScale_ValueChanged);
+            // 
+            // chkTestSignal
+            // 
+            this.chkTestSignal.AutoSize = true;
+            this.chkTestSignal.Location = new System.Drawing.Point(83, 425);
+            this.chkTestSignal.Name = "chkTestSignal";
+            this.chkTestSignal.Size = new System.Drawing.Size(77, 17);
+            this.chkTestSignal.TabIndex = 33;
+            this.chkTestSignal.Text = "Test signal";
+            this.chkTestSignal.UseVisualStyleBackColor = true;
+            this.chkTestSignal.CheckedChanged += new System.EventHandler(this.chkTestSignal_CheckedChanged);
+            // 
+            // tbTestFrequency
+            // 
+            this.tbTestFrequency.AutoSize = false;
+            this.tbTestFrequency.LargeChange = 3;
+            this.tbTestFrequency.Location = new System.Drawing.Point(23, 451);
+            this.tbTestFrequency.Maximum = 3072000;
+            this.tbTestFrequency.Name = "tbTestFrequency";
+            this.tbTestFrequency.Size = new System.Drawing.Size(199, 18);
+            this.tbTestFrequency.TabIndex = 32;
+            this.tbTestFrequency.TickFrequency = 200;
+            this.tbTestFrequency.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.tbTestFrequency.Scroll += new System.EventHandler(this.tbTestFrequency_Scroll);
+            // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(28, 429);
+            this.label14.Location = new System.Drawing.Point(28, 396);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(114, 13);
             this.label14.TabIndex = 31;
@@ -345,7 +440,7 @@
             0,
             0,
             65536});
-            this.udGFIR_BPF_Width.Location = new System.Drawing.Point(153, 425);
+            this.udGFIR_BPF_Width.Location = new System.Drawing.Point(153, 392);
             this.udGFIR_BPF_Width.Maximum = new decimal(new int[] {
             25,
             0,
@@ -457,36 +552,6 @@
             this.label6.TabIndex = 22;
             this.label6.Text = "LNA Gain";
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(28, 397);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(106, 13);
-            this.label5.TabIndex = 20;
-            this.label5.Text = "Frequency diff. (KHz)";
-            // 
-            // udFrequencyDiff
-            // 
-            this.udFrequencyDiff.DecimalPlaces = 3;
-            this.udFrequencyDiff.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.udFrequencyDiff.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.udFrequencyDiff.Location = new System.Drawing.Point(143, 392);
-            this.udFrequencyDiff.Minimum = new decimal(new int[] {
-            100,
-            0,
-            0,
-            -2147483648});
-            this.udFrequencyDiff.Name = "udFrequencyDiff";
-            this.udFrequencyDiff.Size = new System.Drawing.Size(72, 22);
-            this.udFrequencyDiff.TabIndex = 19;
-            this.udFrequencyDiff.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.udFrequencyDiff.ValueChanged += new System.EventHandler(this.udFrequencyDiff_ValueChanged);
-            // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.txtTemperature);
@@ -509,7 +574,7 @@
             this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Location = new System.Drawing.Point(6, 14);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(242, 464);
+            this.groupBox4.Size = new System.Drawing.Size(242, 440);
             this.groupBox4.TabIndex = 20;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Device Info";
@@ -517,7 +582,7 @@
             // txtTemperature
             // 
             this.txtTemperature.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtTemperature.Location = new System.Drawing.Point(17, 389);
+            this.txtTemperature.Location = new System.Drawing.Point(17, 370);
             this.txtTemperature.Name = "txtTemperature";
             this.txtTemperature.ReadOnly = true;
             this.txtTemperature.Size = new System.Drawing.Size(208, 22);
@@ -527,7 +592,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(93, 373);
+            this.label17.Location = new System.Drawing.Point(93, 354);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(67, 13);
             this.label17.TabIndex = 44;
@@ -536,7 +601,7 @@
             // btnRadioInfo
             // 
             this.btnRadioInfo.Enabled = false;
-            this.btnRadioInfo.Location = new System.Drawing.Point(81, 425);
+            this.btnRadioInfo.Location = new System.Drawing.Point(81, 406);
             this.btnRadioInfo.Name = "btnRadioInfo";
             this.btnRadioInfo.Size = new System.Drawing.Size(75, 23);
             this.btnRadioInfo.TabIndex = 43;
@@ -547,7 +612,7 @@
             // txtGatewareVersion
             // 
             this.txtGatewareVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtGatewareVersion.Location = new System.Drawing.Point(17, 345);
+            this.txtGatewareVersion.Location = new System.Drawing.Point(17, 326);
             this.txtGatewareVersion.Name = "txtGatewareVersion";
             this.txtGatewareVersion.ReadOnly = true;
             this.txtGatewareVersion.Size = new System.Drawing.Size(208, 22);
@@ -557,7 +622,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(93, 329);
+            this.label16.Location = new System.Drawing.Point(93, 310);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(56, 13);
             this.label16.TabIndex = 41;
@@ -566,7 +631,7 @@
             // txtFirm_version
             // 
             this.txtFirm_version.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtFirm_version.Location = new System.Drawing.Point(17, 304);
+            this.txtFirm_version.Location = new System.Drawing.Point(17, 285);
             this.txtFirm_version.Name = "txtFirm_version";
             this.txtFirm_version.ReadOnly = true;
             this.txtFirm_version.Size = new System.Drawing.Size(208, 22);
@@ -576,7 +641,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(78, 288);
+            this.label15.Location = new System.Drawing.Point(78, 269);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(86, 13);
             this.label15.TabIndex = 39;
@@ -585,7 +650,7 @@
             // txtLimeSuiteVersion
             // 
             this.txtLimeSuiteVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtLimeSuiteVersion.Location = new System.Drawing.Point(17, 263);
+            this.txtLimeSuiteVersion.Location = new System.Drawing.Point(17, 244);
             this.txtLimeSuiteVersion.Name = "txtLimeSuiteVersion";
             this.txtLimeSuiteVersion.ReadOnly = true;
             this.txtLimeSuiteVersion.Size = new System.Drawing.Size(208, 22);
@@ -595,7 +660,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(92, 247);
+            this.label10.Location = new System.Drawing.Point(92, 228);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(58, 13);
             this.label10.TabIndex = 35;
@@ -688,12 +753,33 @@
             this.label9.TabIndex = 26;
             this.label9.Text = "Name";
             // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.btnRXcalibration);
+            this.groupBox1.Location = new System.Drawing.Point(6, 463);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(245, 66);
+            this.groupBox1.TabIndex = 21;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Calibration";
+            // 
+            // btnRXcalibration
+            // 
+            this.btnRXcalibration.Location = new System.Drawing.Point(85, 18);
+            this.btnRXcalibration.Name = "btnRXcalibration";
+            this.btnRXcalibration.Size = new System.Drawing.Size(75, 30);
+            this.btnRXcalibration.TabIndex = 44;
+            this.btnRXcalibration.Text = "RX calibrate";
+            this.btnRXcalibration.UseVisualStyleBackColor = true;
+            this.btnRXcalibration.Click += new System.EventHandler(this.btnRXcalibration_Click);
+            // 
             // LimeSDRControllerDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.close;
-            this.ClientSize = new System.Drawing.Size(516, 528);
+            this.ClientSize = new System.Drawing.Size(516, 583);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.close);
@@ -703,7 +789,7 @@
             this.Name = "LimeSDRControllerDialog";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.Text = "LimeSDR Controller YT7PWR   v0.4 18012020";
+            this.Text = "LimeSDR Controller YT7PWR   v0.5 24.01.2022";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.LimeSDRControllerDialog_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.gainBar)).EndInit();
@@ -712,13 +798,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.udSpecOffset)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.udTestSignalNoise)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.udTestSignalScale)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbTestFrequency)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.udGFIR_BPF_Width)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbLimeSDR_PGAGain)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbLimeSDR_TIAGain)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbLimeSDR_LNAGain)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.udFrequencyDiff)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -760,8 +849,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TrackBar tbLimeSDR_LNAGain;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown udFrequencyDiff;
         private System.Windows.Forms.TextBox txtLimeSuiteVersion;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox txtGatewareVersion;
@@ -775,5 +862,13 @@
         private System.Windows.Forms.NumericUpDown udGFIR_BPF_Width;
         private System.Windows.Forms.TextBox txtTemperature;
         private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.NumericUpDown udTestSignalNoise;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.NumericUpDown udTestSignalScale;
+        private System.Windows.Forms.CheckBox chkTestSignal;
+        private System.Windows.Forms.TrackBar tbTestFrequency;
+        private System.Windows.Forms.GroupBox groupBox1;
+        public System.Windows.Forms.Button btnRXcalibration;
     }
 }

@@ -305,8 +305,9 @@ namespace SDRSharp.CAT
                 {
                     _run = false;
                     _sendEvent.Set();
+                    Thread.Sleep(100);
                     _serialPort.DataReceived -= new SerialDataReceivedEventHandler(SerialRXEventHandler);
-                    _serialPort.Close();
+                    //_serialPort.Close();
                     _serialPort = (SerialPort)null;
                 }
 
@@ -351,7 +352,7 @@ namespace SDRSharp.CAT
                         {
                             if (CATEcho)
                             {
-                                if (question1.Length != j)
+                                if (question1.Length != j + 1)
                                     question1 = new byte[j + 1];
 
                                 for (int k = 0; k < j + 1; k++)
@@ -537,6 +538,14 @@ namespace SDRSharp.CAT
                             answer[6] = 0xfd;
                             break;
                     }
+                    break;
+
+                case 0x25:
+                    answer = CMD_25(pCmdString);
+                    break;
+
+                case 0x26:
+                    answer = CMD_26(pCmdString);
                     break;
 
                 default:
@@ -2625,6 +2634,136 @@ namespace SDRSharp.CAT
                 }
 
                 return answer;
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex.ToString());
+                return command;
+            }
+        }
+
+        public byte[] CMD_25(byte[] command)     // read SUB RX op mode data
+        {
+            try
+            {
+                byte[] answer = new byte[6];
+
+                if (command[5] == 0xfd)
+                {
+                    switch (CurrentDSPMode)
+                    {
+                        case DSPMode.LSB:
+                            answer[5] = 0;
+                            break;
+
+                        case DSPMode.USB:
+                            answer[5] = 1;
+                            break;
+
+                        case DSPMode.AM:
+                            answer[5] = 2;
+                            break;
+
+                        case DSPMode.CWU:
+                            answer[5] = 3;
+                            break;
+
+                        case DSPMode.FMN:
+                            answer[5] = 5;
+                            break;
+
+                        case DSPMode.CWL:
+                            answer[5] = 7;
+                            break;
+
+                        case DSPMode.SAM:
+                            answer[5] = 0x11;
+                            break;
+                    }
+
+                    switch (CurrentFilter)
+                    {
+                        case Filter.F5:
+                            answer[6] = 1;
+                            break;
+
+                        case Filter.F7:
+                            answer[6] = 2;
+                            break;
+
+                        case Filter.F9:
+                            answer[6] = 3;
+                            break;
+
+                        default:
+                            answer[6] = 1;
+                            break;
+                    }
+
+                    answer[0] = 0xfe;
+                    answer[1] = 0xfe;
+                    answer[2] = command[3];         // swapp address
+                    answer[3] = command[2];
+                    answer[4] = 0xfb;               // OK
+                    answer[5] = 0xfd;
+                    return answer;
+                }
+                else
+                {
+                    answer = new byte[6];
+                    answer[0] = 0xfe;
+                    answer[1] = 0xfe;
+                    answer[2] = command[3];         // swapp address
+                    answer[3] = command[2];
+                    answer[4] = 0xfa;               // error
+                    answer[5] = 0xfd;
+                    return answer;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex.ToString());
+                return command;
+            }
+        }
+
+        public byte[] CMD_26(byte[] command)     // write op freq to VFO B
+        {
+            try
+            {
+                if (command[5] == 0xfd)
+                {
+                    byte[] answer = new byte[11];
+                    byte[] frequency = new byte[10];
+                    string freq = Frequency.ToString();
+                    freq = freq.PadLeft(10, '0');
+                    ASCIIEncoding buff = new ASCIIEncoding();
+                    buff.GetBytes(freq, 0, freq.Length, frequency, 0);
+                    answer[0] = 0xfe;
+                    answer[1] = 0xfe;
+                    answer[2] = command[3];         // swapp address
+                    answer[3] = command[2];
+                    answer[4] = 0x03;
+                    answer[5] = (byte)((frequency[8] - 0x30) << 4 | (frequency[9] - 0x30));
+                    answer[6] = (byte)((frequency[6] - 0x30) << 4 | (frequency[7] - 0x30));
+                    answer[7] = (byte)((frequency[4] - 0x30) << 4 | (frequency[5] - 0x30));
+                    answer[8] = (byte)((frequency[2] - 0x30) << 4 | (frequency[3] - 0x30));
+                    answer[9] = (byte)((frequency[0] - 0x30) << 4 | (frequency[1] - 0x30));
+                    answer[10] = 0xfd;
+
+                    return answer;
+                }
+                else
+                {
+                    byte[] answer = new byte[6];
+                    answer[0] = 0xfe;
+                    answer[1] = 0xfe;
+                    answer[2] = command[3];         // swapp address
+                    answer[3] = command[2];
+                    answer[4] = 0xfa;               // error
+                    answer[5] = 0xfd;
+                    return answer;
+                }
             }
             catch (Exception ex)
             {

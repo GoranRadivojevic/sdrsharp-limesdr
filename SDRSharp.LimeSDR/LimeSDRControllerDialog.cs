@@ -58,7 +58,6 @@ namespace SDRSharp.LimeSDR
                 ant_h.Checked = Utils.GetBooleanSetting("LimeSDR ANT_H");
                 ant_w.Checked = Utils.GetBooleanSetting("LimeSDR ANT_W");
                 udSpecOffset.Value = (decimal)Utils.GetDoubleSetting("LimeSDR SpecOffset", 50);
-                udFrequencyDiff.Value = (decimal)Utils.GetDoubleSetting("LimeSDR Frequency diff.", 0.0);
                 udGFIR_BPF_Width.Value = (decimal)Utils.GetDoubleSetting("LimeSDR GFIR BPF width", 0.0);
             }
             catch(Exception ex)
@@ -89,6 +88,7 @@ namespace SDRSharp.LimeSDR
             samplerateComboBox.Items.Add("19200000");
             samplerateComboBox.Items.Add("24576000");
             samplerateComboBox.Items.Add("30000000");
+            samplerateComboBox.Items.Add("30720000");
             samplerateComboBox.Items.Add("35000000");
             samplerateComboBox.Items.Add("40000000");
             samplerateComboBox.Items.Add("49152000");
@@ -350,23 +350,6 @@ namespace SDRSharp.LimeSDR
             }
         }
 
-        private void udFrequencyDiff_ValueChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                _freqDiff = (double)udFrequencyDiff.Value * 1e3;
-
-                if(_owner != null)
-                    _owner.FreqDiff = (double)udFrequencyDiff.Value * 1e3;
-
-                Utils.SaveSetting("LimeSDR Frequency diff.", udFrequencyDiff.Value.ToString());
-            }
-            catch (Exception ex)
-            {
-                Debug.Write(ex.ToString());
-            }
-        }
-
         private void tbLimeSDR_LNAGain_Scroll(object sender, EventArgs e)
         {
             try
@@ -570,6 +553,75 @@ namespace SDRSharp.LimeSDR
                 {
                     _owner.Device.Set_GFIR_BPF_Width((double)((double)udGFIR_BPF_Width.Value * 1e6));
                     Utils.SaveSetting("LimeSDR GFIR BPF width", udGFIR_BPF_Width.Value.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex.ToString());
+            }
+        }
+
+        private void chkTestSignal_CheckedChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                _owner.Device.test_signal = chkTestSignal.Checked;
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex.ToString());
+            }
+        }
+
+        private void tbTestFrequency_Scroll(object sender, EventArgs e)
+        {
+            try
+            {
+                _owner.Device.sine_freq1 = tbTestFrequency.Value;
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex.ToString());
+            }
+        }
+
+        private void udTestSignalScale_ValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                _owner.Device.input_signal_source_scale = (double)udTestSignalScale.Value;
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex.ToString());
+            }
+        }
+
+        private void udTestSignalNoise_ValueChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                _owner.Device.input_noise_source_scale = (double)udTestSignalNoise.Value;
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex.ToString());
+            }
+        }
+
+        private void btnRXcalibration_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_owner.Device.RXcalibration(_sampleRate))
+                {
+                    btnRXcalibration.BackColor = Color.Green;
+                    btnRXcalibration.ForeColor = Color.White;
+                }
+                else
+                {
+                    btnRXcalibration.BackColor = Color.Red;
+                    btnRXcalibration.ForeColor = Color.White;
                 }
             }
             catch (Exception ex)

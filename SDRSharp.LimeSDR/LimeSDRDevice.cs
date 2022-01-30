@@ -62,6 +62,15 @@ namespace SDRSharp.LimeSDR
 
         public double GFIR_BPF_Width = 0.0;
 
+        double phase_accumulator1;
+        public double input_noise_source_scale = 0.001;
+        public double input_signal_source_scale = 0.005;
+        private Random r = new Random();
+        private double y2 = 0.0;
+        private bool use_last = false;
+        public double sine_freq1 = 0.05;
+        public bool test_signal = false;
+
         #endregion
 
         #region Properties
@@ -221,15 +230,23 @@ namespace SDRSharp.LimeSDR
                     Thread.Sleep(100);
                 }
 
-                NativeMethods.LMS_RecvStream(_stream, _samplesPtr, _readLength, ref meta, SampleTimeoutMs);
-
                 var ptrIq = _iqPtr;
 
-                for (int i = 0; i < _readLength; i++)
+                if (test_signal)
                 {
-                    ptrIq->Real = _samplesPtr[i * 2] / SpectrumOffset;
-                    ptrIq->Imag = _samplesPtr[i * 2 + 1] / SpectrumOffset;
-                    ptrIq++;
+                    SineWaveWithNoise(ptrIq, _readLength, phase_accumulator1, sine_freq1);
+                    phase_accumulator1 = CosineWaveWithNoise(ptrIq, _readLength, phase_accumulator1, sine_freq1);
+                }
+                else
+                {
+                    NativeMethods.LMS_RecvStream(_stream, _samplesPtr, _readLength, ref meta, SampleTimeoutMs);
+
+                    for (int i = 0; i < _readLength; i++)
+                    {
+                        ptrIq->Real = _samplesPtr[i * 2] / SpectrumOffset;
+                        ptrIq->Imag = _samplesPtr[i * 2 + 1] / SpectrumOffset;
+                        ptrIq++;
+                    }
                 }
 
                 ComplexSamplesAvailable(_iqPtr, _iqBuffer.Length);
@@ -237,6 +254,96 @@ namespace SDRSharp.LimeSDR
 
             NativeMethods.LMS_StopStream(_stream);
             Close();
+        }
+
+        private double boxmuller(double m, double s)
+        {
+            double x1, x2, w, y1;
+            if (use_last)		        /* use value from previous call */
+            {
+                y1 = y2;
+                use_last = false;
+            }
+            else
+            {
+                do
+                {
+                    x1 = (2.0 * r.NextDouble() - 1.0);
+                    x2 = (2.0 * r.NextDouble() - 1.0);
+                    w = x1 * x1 + x2 * x2;
+                } while (w >= 1.0);
+
+                w = Math.Sqrt((-2.0 * Math.Log(w)) / w);
+                y1 = x1 * w;
+                y2 = x2 * w;
+                use_last = true;
+            }
+
+            return (m + y1 * s);
+        }
+
+        // returns updated phase accumulator
+        unsafe public double SineWaveWithNoise(Complex* buf, uint samples, double phase, double freq)
+        {
+            double phase_step = freq / _sampleRate * 2 * Math.PI;
+            double cosval = Math.Cos(phase);
+            double sinval = Math.Sin(phase);
+            double cosdelta = Math.Cos(phase_step);
+            double sindelta = Math.Sin(phase_step);
+            double tmpval;
+
+            for (int i = 0; i < samples; i++)       // noise part
+            {
+                buf[i].Real = (float)(boxmuller(0.0, 0.2) * input_noise_source_scale) / SpectrumOffset;
+            }
+
+            for (int i = 0; i < samples; i++)       // signal part
+            {
+                tmpval = cosval * cosdelta - sinval * sindelta;
+                sinval = cosval * sindelta + sinval * cosdelta;
+                cosval = tmpval;
+
+                buf[i].Real += (float)(sinval * input_signal_source_scale) / SpectrumOffset;
+
+                phase += phase_step;
+
+                if (phase > Math.PI)
+                    phase -= 2 * Math.PI;
+            }
+
+            return phase;
+        }
+
+        // returns updated phase accumulator
+        unsafe public double CosineWaveWithNoise(Complex* buf, uint samples, double phase, double freq)
+        {
+            double phase_step = freq / _sampleRate * 2 * Math.PI;
+            double cosval = Math.Cos(phase);
+            double sinval = Math.Sin(phase);
+            double cosdelta = Math.Cos(phase_step);
+            double sindelta = Math.Sin(phase_step);
+            double tmpval;
+
+            for (int i = 0; i < samples; i++)       // noise part
+            {
+                buf[i].Imag = (float)(boxmuller(0.0, 0.2) * input_noise_source_scale) / SpectrumOffset;
+            }
+
+            for (int i = 0; i < samples; i++)
+            {
+                tmpval = cosval * cosdelta - sinval * sindelta;
+                sinval = cosval * sindelta + sinval * cosdelta;
+                cosval = tmpval;
+
+                buf[i].Imag += (float)(cosval * input_signal_source_scale) / SpectrumOffset;
+
+                phase += phase_step;
+
+                if (phase > Math.PI)
+                    phase -= 2 * Math.PI;
+            }
+
+            return phase;
         }
 
         #endregion
@@ -691,6 +798,27 @@ namespace SDRSharp.LimeSDR
                 Debug.Write(ex.ToString());
 
                 return 0.0;
+            }
+        }
+
+        public bool RXcalibration(double RX_LPFBW)
+        {
+            try
+            {
+                    int result = NativeMethods.LMS_Calibrate(_device, LMS_CH_RX, _channel, Math.Max(RX_LPFBW, 5e6), 0);
+
+                    if (result == 0)
+                        return true;
+                    else
+                    {
+                        return false;
+                    }
+            }
+            catch (Exception ex)
+            {
+                Debug.Write(ex.ToString());
+
+                return false;
             }
         }
     }

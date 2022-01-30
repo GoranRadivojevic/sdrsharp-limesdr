@@ -1,6 +1,6 @@
 # sdrsharp-limesdr
 
-LimeSDR for SDR# Plugin
+LimeSDR for SDR# Plugin (up to 1784 version)
 
 ## Installation
 
